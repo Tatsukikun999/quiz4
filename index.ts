@@ -1,3 +1,37 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@Tatsukikun999 
+cpe-cmu-261207
+/
+quiz441-Tatsukikun999
+Template
+generated from ChayaninSuatap/261207-practical-exam-4-template
+1
+0
+0
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+quiz441-Tatsukikun999/index.ts /
+@Tatsukikun999
+Tatsukikun999 Update index.ts
+Latest commit 22b7677 now
+ History
+ 2 contributors
+@Tatsukikun999@github-classroom
+153 lines (125 sloc)  3.63 KB
+  
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
@@ -19,10 +53,10 @@ interface JWTPayload {
   password: string;
 }
 
-app.post('/login',
+app.post<any, any, LoginArgs>('/login',
   (req, res) => {
 
-    const body = req.body
+  const body = req.body
   const db = readDbFile()
   const user = db.users.find(user => user.username === body.username)
   if (!user) {
@@ -42,12 +76,13 @@ app.post('/login',
   res.json({ token })
 })
 
+
 app.post('/register',
   (req, res) => {
 
     const { username, password, firstname, lastname, balance } = req.body
     try{
-      jwt.create({username,password,firstname,lastname,balance})
+      req.create({username,password,firstname,lastname,balance})
       res.json({message: "Register successfully"})
     }catch(error){
       res.status(400).json({message: "Username is already in used"});
@@ -78,7 +113,7 @@ app.post('/deposit',
       res.status(401).json({message: "Invalid token"})
     }
     else{
-      jwt.balance += jwt.amount
+      req.balance += req.amount
       res.status(200).json({message: "Deposit successfully"},
       {deposit: req.balance})
     }
@@ -93,7 +128,7 @@ app.post('/withdraw',
       res.status(401).json({message: "Invalid token"})
     }
     else{
-      jwt.balance -= jwt.amount
+      req.balance -= req.amount
       res.status(200).json({message: "Withdraw successfully"},
       {balance: req.balance})
     }
@@ -103,10 +138,38 @@ app.post('/withdraw',
 app.delete('/reset', (req, res) => {
 
   //code your database reset here
-  jwt.reset()
-  return res.status(200).json({
-    message: 'Reset database successfully'
-  })
+  
+  const id = Number(req.params.id)
+  const token = req.query.token as string
+
+  console.log(id)
+
+  try {
+    const data = jwt.verify(token, SECRET_KEY) as JWTPayload
+    const db = readDbFile()
+    const todos = db.todos[data.username] || []
+
+    if (!todos.find(todo => todo.id === id)) {
+      res.status(404)
+      res.json({
+        message: 'This todo not found'
+      })
+      return
+    }
+
+    const newTodos = todos.filter(todo => todo.id !== id)
+    db.todos[data.username] = newTodos
+    fs.writeFileSync('db.json', JSON.stringify(db))
+
+    res.json({
+      message: 'Deleted todo'
+    })
+
+  } catch(e) {
+    res.status(401)
+    res.json({ message: e.message })
+  }
+})
 })
 
 app.get('/me', (req, res) => {
@@ -122,3 +185,4 @@ app.get('/demo', (req, res) => {
 })
 
 app.listen(PORT, () => console.log(`Server is running at ${PORT}`))
+
