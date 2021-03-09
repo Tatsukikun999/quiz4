@@ -24,7 +24,7 @@ app.post('/login',
 
     const { username, password } = req.body
     // Use username and password to create token.
-    if(username == req.username&&password == req.password)
+    if(username == jwt.username&&password == jwt.password)
       return res.status(200).json({
         message: 'Login succesfully', "token": req.token
       })
@@ -38,7 +38,7 @@ app.post('/register',
 
     const { username, password, firstname, lastname, balance } = req.body
     try{
-      req.create({username,password,firstname,lastname,balance})
+      jwt.create({username,password,firstname,lastname,balance})
       res.json({message: "Register successfully"})
     }catch(error){
       res.status(400).json({message: "Username is already in used"});
@@ -69,7 +69,7 @@ app.post('/deposit',
       res.status(401).json({message: "Invalid token"})
     }
     else{
-      req.balance += req.amount
+      jwt.balance += jwt.amount
       res.status(200).json({message: "Deposit successfully"},
       {deposit: req.balance})
     }
@@ -84,7 +84,7 @@ app.post('/withdraw',
       res.status(401).json({message: "Invalid token"})
     }
     else{
-      req.balance -= req.amount
+      jwt.balance -= jwt.amount
       res.status(200).json({message: "Withdraw successfully"},
       {balance: req.balance})
     }
@@ -94,7 +94,7 @@ app.post('/withdraw',
 app.delete('/reset', (req, res) => {
 
   //code your database reset here
-  req.reset()
+  jwt.reset()
   return res.status(200).json({
     message: 'Reset database successfully'
   })
