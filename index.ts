@@ -1,37 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@Tatsukikun999 
-cpe-cmu-261207
-/
-quiz441-Tatsukikun999
-Template
-generated from ChayaninSuatap/261207-practical-exam-4-template
-1
-0
-0
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-quiz441-Tatsukikun999/index.ts /
-@Tatsukikun999
-Tatsukikun999 Update index.ts
-Latest commit 22b7677 now
- History
- 2 contributors
-@Tatsukikun999@github-classroom
-153 lines (125 sloc)  3.63 KB
-  
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
