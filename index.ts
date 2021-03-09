@@ -22,16 +22,25 @@ interface JWTPayload {
 app.post('/login',
   (req, res) => {
 
-    const { username, password } = req.body
-    // Use username and password to create token.
-    if(username == jwt.username&&password == jwt.password)
-      return res.status(200).json({
-        message: 'Login succesfully', "token": req.token
-      })
-    else{
-      res.status(400).json({"message": "Invalid username or password"})
-    }
-  })
+    const body = req.body
+  const db = readDbFile()
+  const user = db.users.find(user => user.username === body.username)
+  if (!user) {
+    res.status(400)
+    res.json({ message: 'Invalid username or password' })
+    return
+  }
+  if (!bcrypt.compareSync(body.password, user.password)) {
+    res.status(400)
+    res.json({ message: 'Invalid username or password' })
+    return
+  }
+  const token = jwt.sign(
+    { id: user.id, username: user.username } as JWTPayload, 
+    SECRET_KEY
+  )
+  res.json({ token })
+})
 
 app.post('/register',
   (req, res) => {
@@ -103,7 +112,7 @@ app.delete('/reset', (req, res) => {
 app.get('/me', (req, res) => {
   const {firstname,lastname,code,gpa} = req.body
   req.create({firstname,lastname,code,gpa})
-  res.status(200).json({firstname: firstname},{lastname: lastname},{code: code},{gpa:gpa})
+  res.status(200).json({firstname: Traiphob},{lastname: Srimanee},{code: 620610788},{gpa:2.91})
 })
 
 app.get('/demo', (req, res) => {
